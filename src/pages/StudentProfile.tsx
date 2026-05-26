@@ -896,11 +896,12 @@ import {
   ZoomIn, RotateCcw,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 /* ═══════════════════════════════════════════════════════════
    API map
 ═══════════════════════════════════════════════════════════ */
-const BASE = "http://192.168.29.136:8000/api";
+const BASE = "http://192.168.0.8:8000/api";
 
 const ACADEMIC_API: Record<string, string> = {
   "SSC":             `${BASE}/vocational/`,
@@ -2025,6 +2026,30 @@ const StudentProfile = () => {
     }
   };
 
+
+  useEffect(() => {
+
+  const hrId = localStorage.getItem("hr_id");
+
+  if (!hrId) return;
+
+  axios
+    .get(`http://127.0.0.1:8000/api/hr/${hrId}/`)
+    .then((res) => {
+
+      set("hrName",
+        `${res.data.first_name} ${res.data.last_name}`
+      );
+
+      set("idNo", res.data.hr_id);
+
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
+}, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-sky-50"
       style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
@@ -2058,8 +2083,22 @@ const StudentProfile = () => {
           <CardHeader icon={<User className="w-4 h-4 text-white" />} title="HR Information" badge="Internal" />
           <div className="p-6 grid grid-cols-1 md:grid-cols-12 gap-5">
             <div className="md:col-span-4 space-y-4">
-              <Field label="HR Name"             field="hrName"             value={v("hrName")}             onChange={set} />
-              <Field label="ID No."              field="idNo"               value={v("idNo")}               onChange={set} />
+              {/* <Field label="HR Name"             field="hrName"             value={v("hrName")}             onChange={set} />
+              <Field label="ID No."              field="idNo"               value={v("idNo")}               onChange={set} /> */}
+
+              <Field
+  label="HR Name"
+  field="hrName"
+  value={v("hrName")}
+  onChange={set}
+/>
+
+<Field
+  label="ID No."
+  field="idNo"
+  value={v("idNo")}
+  onChange={set}
+/>
               {/* <Field label="Password"            field="password"           value={v("password")}           onChange={set} type="password" /> */}
             </div>
             <div className="md:col-span-4 space-y-4">

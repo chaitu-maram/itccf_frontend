@@ -582,49 +582,92 @@ export default function HRDashboard() {
   // =========================================
   // CHECK LOGIN + FETCH DATA
   // =========================================
-  useEffect(() => {
+//   useEffect(() => {
 
-    const userType = localStorage.getItem("user_type");
+//     const userType = localStorage.getItem("user_type");
 
-    const hrId = localStorage.getItem("hr_id");
+//     const hrId = localStorage.getItem("hr_id");
 
-    if (userType !== "hr" || !hrId) {
+//     if (userType !== "hr" || !hrId) {
 
-      navigate("/");
+//       navigate("/");
 
-      return;
-    }
+//       return;
+//     }
 
-    setHrData({
-      hr_id: hrId,
-      name: localStorage.getItem("name") || "HR User",
-      email: localStorage.getItem("email") || "",
+//     setHrData({
+//       hr_id: hrId,
+//       name: localStorage.getItem("name") || "HR User",
+//       email: localStorage.getItem("email") || "",
+
+//     });
+
+//     // =========================================
+//     // FETCH STUDENTS FROM DATABASE
+//     // =========================================
+//     fetch(
+//   `http://192.168.29.136:8000/api/auth/students/?hr_id=${hrData?.hr_id}`
+// )
+//   .then((res) => res.json())
+//   .then((data) => {
+
+//     console.log(data);
+
+//     if (data.results) {
+//       setStudents(data.results);
+//     } else {
+//       setStudents(data);
+//     }
+
+//     setLoading(false);
+//   });
+//   }, [navigate]);
+
+
+
+useEffect(() => {
+
+  const userType = localStorage.getItem("user_type");
+  const hrId = localStorage.getItem("hr_id");
+
+  if (userType !== "hr" || !hrId) {
+    navigate("/");
+    return;
+  }
+
+  const name = localStorage.getItem("name") || "HR User";
+  const email = localStorage.getItem("email") || "";
+
+  setHrData({
+    hr_id: hrId,
+    name,
+    email,
+  });
+
+  console.log("Logged HR ID:", hrId);
+
+  fetch(
+    `http://192.168.0.8:8000/api/auth/students/?hr_id=${hrId}`
+  )
+    .then((res) => res.json())
+    .then((data) => {
+
+      console.log("Students:", data);
+
+      if (data.results) {
+        setStudents(data.results);
+      } else {
+        setStudents(data);
+      }
+
+      setLoading(false);
+    })
+    .catch((err) => {
+      console.log(err);
+      setLoading(false);
     });
 
-    // =========================================
-    // FETCH STUDENTS FROM DATABASE
-    // =========================================
-    fetch("http://192.168.29.136:8000/api/auth/students/")
-      .then((res) => res.json())
-      .then((data) => {
-
-        console.log(data);
-
-        // if paginated response
-        if (data.results) {
-          setStudents(data.results);
-        } else {
-          setStudents(data);
-        }
-
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        setLoading(false);
-      });
-
-  }, [navigate]);
+}, [navigate]);
 
   // =========================================
   // LOGOUT
@@ -1090,18 +1133,16 @@ export default function HRDashboard() {
                         </td>
 
                         <td>
-                          {student.email || "-"}
-                        </td>
+  {student.email || "-"}
+</td>
 
-                        <td>
-                          {student.phone || "-"}
-                        </td>
+<td>
+  {student.mobile_personal || "-"}
+</td>
 
-                        <td>
-                          {student.qualification ||
-                            student.course ||
-                            "-"}
-                        </td>
+<td>
+  {student.academic || student.specialization || "-"}
+</td>
 
                       </tr>
 

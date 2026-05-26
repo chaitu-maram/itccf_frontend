@@ -540,7 +540,7 @@ import { Link, useNavigate } from "react-router-dom";
 /* ═══════════════════════════════════════════════════════════
    Constants
 ═══════════════════════════════════════════════════════════ */
-const BASE = "http://192.168.29.136:8000/api";
+const BASE = "http://192.168.0.8:8000/api";
 
 // States where college name is fetched as a dropdown
 const DROPDOWN_STATES = ["Andhra Pradesh", "Telangana"];
@@ -1089,7 +1089,7 @@ export default function HRSignup() {
         <StepBar current={step} />
 
         {/* ── Card ── */}
-        <div className="bg-white rounded-3xl border-2 border-blue-100 shadow-lg shadow-blue-50 overflow-hidden">
+        <div className="bg-white rounded-3xl border-2 border-blue-100 shadow-lg shadow-blue-50 ">
 
           {/* Card header */}
           <div className="flex items-center gap-3 px-6 py-4 border-b-2 border-blue-50 bg-gradient-to-r from-blue-50 to-white">

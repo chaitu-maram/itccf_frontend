@@ -14,7 +14,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 // ↑ Replace with your own static image URL, e.g. "/qr-code.png" or any CDN link
 
 const PAYMENT_AMOUNT = "₹2,000.00";
-const BASE = "http://192.168.29.136:8000/api";
+const BASE = "http://192.168.0.8:8000/api";
 
 /* ═══════════════════════════════════════════════════════════
    Main Component

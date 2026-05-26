@@ -377,7 +377,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 /* ═══════════════════════════════════════════════════════════
    Constants
 ═══════════════════════════════════════════════════════════ */
-const BASE = "http://192.168.29.136:8000/api";
+const BASE = "http://192.168.0.8:8000/api";
 
 /* ═══════════════════════════════════════════════════════════
    OTP Input — 6 individual boxes with auto-advance & paste
@@ -497,7 +497,7 @@ export default function HRVerify() {
       }
       setPhase("success");
       // ✅ Redirect to index (login) page after successful OTP verification
-      setTimeout(() => navigate("/"), 2200);
+      setTimeout(() => navigate("/payment"), 2200);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Verification failed.");
       setOtp("");
@@ -552,7 +552,7 @@ export default function HRVerify() {
             <p className="text-sm font-semibold text-slate-400 mt-1">Your HR account is now active.</p>
           </div>
           <div className="flex items-center gap-2 justify-center text-xs font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-full px-4 py-2 w-fit mx-auto">
-            <Loader2 className="w-3.5 h-3.5 animate-spin" /> Redirecting to login…
+            <Loader2 className="w-3.5 h-3.5 animate-spin" /> Redirecting to payment…
           </div>
         </div>
       </div>
