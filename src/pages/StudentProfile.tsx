@@ -901,7 +901,7 @@ import axios from "axios";
 /* ═══════════════════════════════════════════════════════════
    API map
 ═══════════════════════════════════════════════════════════ */
-const BASE = "http://192.168.0.8:8000/api";
+const BASE = "http://192.168.0.10:8000/api";
 
 const ACADEMIC_API: Record<string, string> = {
   "SSC":             `${BASE}/vocational/`,
@@ -1893,7 +1893,7 @@ const INIT = {
   percentageObtained: "", successRate: "",
   surname: "", name: "", dob_d: "", dob_m: "", dob_y: "",
   regnNo: "", date: "", fatherMotherName: "",
-  academic: "", specialization: "", extraCurricular: "",
+  academic: "", specialization: "", extraCurricular: "",pincode: "",
   additionalQualification: "", drivingLicence: "",
   aadharNo: "", mobilePersonal: "", mobileReference: "",
   hNo: "", streetColony: "", area: "", district: "",
@@ -1943,6 +1943,7 @@ const buildFormData = (form: F, hrPhoto: File | null, studentPhoto: File | null,
   a("h_no", form.hNo);               a("street_colony", form.streetColony);
   a("area", form.area);              a("district", form.district);
   a("house_own_rent", form.houseOwnRent);
+  a("pincode", form.pincode);
   a("email", form.email);            a("reservation", form.reservation);
   if (form.height) fd.append("height", form.height);
   if (form.weight) fd.append("weight", form.weight);
@@ -2136,6 +2137,7 @@ const StudentProfile = () => {
             {/* DOB + Regn + Date */}
             <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-4">
               <DOBPicker dob_d={v("dob_d")} dob_m={v("dob_m")} dob_y={v("dob_y")} onChange={set} />
+              
               <Field label="Regn. No." field="regnNo" value={v("regnNo")} onChange={set} />
               <Field label="Date"      field="date"   value={v("date")}   onChange={set} />
             </div>
@@ -2161,6 +2163,7 @@ const StudentProfile = () => {
             <Divider label="Contact & Identity" />
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <AadharField value={v("aadharNo")} onChange={set} />
+              <Field    label="Email Address"        field="email"        value={v("email")}        onChange={set} type="email" />
               <Field label="Mobile (Personal)"  field="mobilePersonal"  value={v("mobilePersonal")}  onChange={set} />
               <Field label="Mobile (Reference)" field="mobileReference" value={v("mobileReference")} onChange={set} />
             </div>
@@ -2174,11 +2177,27 @@ const StudentProfile = () => {
               <Dropdown label="District"        field="district"     value={v("district")}     onChange={set}
                 options={["Hyderabad","Rangareddy","Medchal","Sangareddy","Nalgonda","Warangal","Karimnagar","Other"]} />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
               <Dropdown label="House Own / Rent"    field="houseOwnRent" value={v("houseOwnRent")} onChange={set} options={["Own","Rent"]} />
-              <Field    label="Email Address"        field="email"        value={v("email")}        onChange={set} type="email" />
+              <Field label="Pincode" field="companyPincode" value={v("pincode")}
+                    onChange={(f, val) => set(f, val.replace(/\D/g, "").slice(0, 6))}
+                    placeholder="6-digit pincode" />
               <Field    label="Reservation (if any)" field="reservation"  value={v("reservation")}  onChange={set} />
-            </div>
+            </div> */}
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+  <Dropdown label="House Own / Rent" field="houseOwnRent" value={v("houseOwnRent")} onChange={set} options={["Own","Rent"]} />
+  <Field
+    label="Pincode"
+    field="pincode"
+    value={v("pincode")}
+    onChange={(f, val) => set(f, val.replace(/\D/g, "").slice(0, 6))}
+    placeholder="6-digit pincode"
+  />
+  <Field label="Reservation (if any)" field="reservation" value={v("reservation")} onChange={set} />
+</div>
+
+            
 
             {/* Physical Information */}
             <Divider label="Physical Information" />

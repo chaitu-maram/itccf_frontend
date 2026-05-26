@@ -647,7 +647,7 @@ useEffect(() => {
   console.log("Logged HR ID:", hrId);
 
   fetch(
-    `http://192.168.0.8:8000/api/auth/students/?hr_id=${hrId}`
+    `http://192.168.0.10:8000/api/auth/students/?hr_id=${hrId}`
   )
     .then((res) => res.json())
     .then((data) => {
