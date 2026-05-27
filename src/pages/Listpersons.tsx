@@ -2157,7 +2157,7 @@ export default function ListPersons() {
                         </td>
 
                         {/* CV */}
-                        <td style={{ padding: "0 14px", verticalAlign: "middle" }}>
+                        {/* <td style={{ padding: "0 14px", verticalAlign: "middle" }}>
                           {isUnlocked ? (
                             <button style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "5px 12px", borderRadius: 9, fontSize: 11.5, fontWeight: 700, color: "#2563EB", background: "#EFF6FF", border: "1.5px solid #BFDBFE", cursor: "pointer", transition: "all 0.15s", whiteSpace: "nowrap" }}
                               onMouseEnter={e => { e.currentTarget.style.background = "#DBEAFE"; e.currentTarget.style.borderColor = "#93C5FD"; e.currentTarget.style.transform = "translateY(-1px)"; }}
@@ -2169,7 +2169,32 @@ export default function ListPersons() {
                               🔒 Locked
                             </span>
                           )}
-                        </td>
+                        </td> */}
+                        {/* CV */}
+<td style={{ padding: "0 14px", verticalAlign: "middle" }}>
+  {isUnlocked ? (
+    <button
+      onClick={() => {
+        const employerId = localStorage.getItem("employer_id") ?? "";
+        const url = `http://192.168.0.7:8000/api/students/${row.id}/cv/?employer_id=${employerId}`;
+        window.open(url, "_blank");   // opens/downloads the PDF
+      }}
+      style={{
+        display: "inline-flex", alignItems: "center", gap: 5,
+        padding: "5px 12px", borderRadius: 9, fontSize: 11.5, fontWeight: 700,
+        color: "#2563EB", background: "#EFF6FF", border: "1.5px solid #BFDBFE",
+        cursor: "pointer", transition: "all 0.15s", whiteSpace: "nowrap"
+      }}
+      onMouseEnter={e => { e.currentTarget.style.background = "#DBEAFE"; e.currentTarget.style.borderColor = "#93C5FD"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+      onMouseLeave={e => { e.currentTarget.style.background = "#EFF6FF"; e.currentTarget.style.borderColor = "#BFDBFE"; e.currentTarget.style.transform = "none"; }}>
+      <FileText style={{ width: 12, height: 12 }} /> View CV
+    </button>
+  ) : (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "5px 12px", borderRadius: 9, fontSize: 11.5, fontWeight: 700, color: "#94A3B8", background: "#F8FAFC", border: "1.5px solid #E2E8F0" }}>
+      🔒 Locked
+    </span>
+  )}
+</td>
 
                         {/* Phone */}
                         <td style={{ padding: "0 14px", verticalAlign: "middle" }}>
