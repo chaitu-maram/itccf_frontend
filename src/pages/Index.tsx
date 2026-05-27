@@ -782,7 +782,7 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
-const BASE = "http://192.168.0.10:8000/api";
+const BASE = "http://192.168.0.7:8000/api";
 
 const NAV  = ["Home","About Us","Authorised HRs","Core Committee","Services","Projects","Associates","Gallery","Contact Us"];
 const TABS = ["PG & Degree Colleges","Industrial Associates","Entrepreneur Sources","Entrepreneur Network"];

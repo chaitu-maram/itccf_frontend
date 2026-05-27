@@ -499,7 +499,7 @@ import { Link, useLocation } from "react-router-dom";
 /* ═══════════════════════════════════════════════════════════
    API base
 ═══════════════════════════════════════════════════════════ */
-const BASE = "http://192.168.0.10:8000/api";
+const BASE = "http://192.168.0.7:8000/api";
 
 /* ═══════════════════════════════════════════════════════════
    Types
@@ -814,7 +814,7 @@ const ResultsScreen = ({ questions, selections, name }: ResultsProps) => {
             {pct}% correct
           </p>
 
-          <Link to="/"
+          <Link to="/hr/dashboard"
             className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-indigo-600
               text-white text-sm font-extrabold tracking-wide shadow-lg shadow-indigo-200
               hover:bg-indigo-700 transition-all">
@@ -979,7 +979,7 @@ const Assignment = () => {
       {/* ── Sticky Navbar ── */}
       <nav className="sticky top-0 z-30 h-14 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
         <div className="max-w-3xl mx-auto px-6 h-full flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-1.5 text-sm font-semibold
+          <Link to="/studentprofile" className="flex items-center gap-1.5 text-sm font-semibold
             text-slate-500 hover:text-indigo-600 transition-colors">
             <ArrowLeft className="w-4 h-4" /> Back
           </Link>

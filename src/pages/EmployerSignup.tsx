@@ -10,7 +10,7 @@ import { Link, useNavigate } from "react-router-dom";
 /* ═══════════════════════════════════════════════════════════
    Constants
 ═══════════════════════════════════════════════════════════ */
-const BASE = "http://192.168.0.10:8000/api";
+const BASE = "http://192.168.0.7:8000/api";
 
 const DESIGNATIONS = [
   "CEO / Managing Director",
@@ -510,7 +510,7 @@ export default function EmployerSignup() {
           .join(" | ");
         throw new Error(msg || `Server error ${res.status}`);
       }
-      navigate("/employer/Listpersons");
+      navigate("/");
     } catch (err: unknown) {
       setErrorMsg(err instanceof Error ? err.message : "Signup failed.");
     } finally {

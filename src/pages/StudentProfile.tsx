@@ -901,7 +901,7 @@ import axios from "axios";
 /* ═══════════════════════════════════════════════════════════
    API map
 ═══════════════════════════════════════════════════════════ */
-const BASE = "http://192.168.0.10:8000/api";
+const BASE = "http://192.168.0.7:8000/api";
 
 const ACADEMIC_API: Record<string, string> = {
   "SSC":             `${BASE}/vocational/`,
@@ -2059,7 +2059,7 @@ const StudentProfile = () => {
       {/* Navbar */}
       <nav className="sticky top-0 z-30 h-16 bg-white/95 backdrop-blur-md border-b-2 border-blue-100 shadow-sm shadow-blue-50">
         <div className="max-w-5xl mx-auto px-6 h-full flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 text-sm font-bold text-blue-400 hover:text-blue-600 transition-colors">
+          <Link to="/hr/dashboard" className="flex items-center gap-2 text-sm font-bold text-blue-400 hover:text-blue-600 transition-colors">
             <ArrowLeft className="w-4 h-4" /> Back
           </Link>
           <div className="flex items-center gap-2.5">

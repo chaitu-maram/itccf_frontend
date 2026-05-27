@@ -1380,20 +1380,19 @@
 //   );
 // }
 
-
 import { useState, useMemo, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Search, X, ChevronUp, ChevronDown, ChevronsUpDown,
   ChevronLeft, ChevronRight, Download, FileText,
   Users, Briefcase, Lightbulb, Award, Phone, Mail,
-  GraduationCap, Code2, HeartPulse, BookOpen, Coins,
+  Code2, HeartPulse, BookOpen, Coins,
   Wrench, Megaphone, Building2, TrendingUp, Home,
   CheckSquare, Trash2, UserCheck, Loader2, AlertCircle,
 } from "lucide-react";
 
 /* ─── API CONFIG ────────────────────────────────────────────── */
-const API_URL = "http://192.168.0.10:8000/api/students/filter/";
+const API_URL = "http://192.168.0.7:8000/api/students/filter/";
 
 /* ─── TYPES ─────────────────────────────────────────────────── */
 interface RawStudent {
@@ -1412,6 +1411,7 @@ interface RawStudent {
   company_name?: string;
   photo?: string;
   hr_photo?: string;
+  is_unlocked?: boolean;
 }
 
 interface Student {
@@ -1426,6 +1426,13 @@ interface Student {
   company: string;
   photo?: string;
   hr_photo?: string;
+  isUnlocked: boolean;
+}
+
+interface EmployerInfo {
+  employer_id: string;
+  name: string;
+  company_name: string;
 }
 
 interface QualMeta {
@@ -1496,18 +1503,19 @@ const normalise = (raw: RawStudent, index: number): Student => ({
   company: raw.company_name ?? "—",
   photo: raw.photo,
   hr_photo: raw.hr_photo,
+  isUnlocked: raw.is_unlocked ?? false,
 });
 
 /* ─── DATA ─────────────────────────────────────────────────── */
 const QUALS_META: Record<string, QualMeta> = {
-  SSC:              { bg: "#FFF1F2", col: "#C81A40", border: "#FECDD3" },
-  ITI:              { bg: "#FFFBEB", col: "#D97706", border: "#FDE68A" },
-  Polytechnic:      { bg: "#ECFDF5", col: "#059669", border: "#A7F3D0" },
-  Intermediate:     { bg: "#EFF6FF", col: "#2563EB", border: "#BFDBFE" },
-  "U.G (Degree)":   { bg: "#F5F3FF", col: "#7C3AED", border: "#DDD6FE" },
-  "P.G (Degree)":   { bg: "#F0F9FF", col: "#0284C7", border: "#BAE6FD" },
-  "U.G(B.Tech/B.E)":{ bg: "#E0F2FE", col: "#0369A1", border: "#7DD3FC" },
-  "P.G(M.Tech/M.E)":{ bg: "#F3E8FF", col: "#9333EA", border: "#D8B4FE" },
+  SSC:               { bg: "#FFF1F2", col: "#C81A40", border: "#FECDD3" },
+  ITI:               { bg: "#FFFBEB", col: "#D97706", border: "#FDE68A" },
+  Polytechnic:       { bg: "#ECFDF5", col: "#059669", border: "#A7F3D0" },
+  Intermediate:      { bg: "#EFF6FF", col: "#2563EB", border: "#BFDBFE" },
+  "U.G (Degree)":    { bg: "#F5F3FF", col: "#7C3AED", border: "#DDD6FE" },
+  "P.G (Degree)":    { bg: "#F0F9FF", col: "#0284C7", border: "#BAE6FD" },
+  "U.G(B.Tech/B.E)": { bg: "#E0F2FE", col: "#0369A1", border: "#7DD3FC" },
+  "P.G(M.Tech/M.E)": { bg: "#F3E8FF", col: "#9333EA", border: "#D8B4FE" },
 };
 
 const FIELD_ICONS: Record<string, React.ElementType> = {
@@ -1591,8 +1599,6 @@ function SelectionBar({ count, onClear, onExportSelected, onDeleteSelected, onPa
         <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{count} selected</span>
       </div>
       <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
-
-        {/* Pay for Data */}
         <button onClick={onPayForData} style={{
           display: "flex", alignItems: "center", gap: 6, padding: "7px 14px",
           background: "linear-gradient(135deg,#16A34A,#22C55E)",
@@ -1604,8 +1610,6 @@ function SelectionBar({ count, onClear, onExportSelected, onDeleteSelected, onPa
           onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
           💳 Pay for Data (₹{RATE_PER_PERSON}/person)
         </button>
-
-        {/* Export Selected */}
         <button onClick={onExportSelected} style={{
           display: "flex", alignItems: "center", gap: 6, padding: "7px 14px",
           background: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.4)",
@@ -1615,8 +1619,6 @@ function SelectionBar({ count, onClear, onExportSelected, onDeleteSelected, onPa
           onMouseLeave={e => e.currentTarget.style.background = "rgba(255,255,255,0.20)"}>
           <Download style={{ width: 13, height: 13 }} /> Export Selected
         </button>
-
-        {/* Delete */}
         <button onClick={onDeleteSelected} style={{
           display: "flex", alignItems: "center", gap: 6, padding: "7px 14px",
           background: "rgba(239,68,68,0.25)", border: "1px solid rgba(239,68,68,0.5)",
@@ -1626,8 +1628,6 @@ function SelectionBar({ count, onClear, onExportSelected, onDeleteSelected, onPa
           onMouseLeave={e => e.currentTarget.style.background = "rgba(239,68,68,0.25)"}>
           <Trash2 style={{ width: 13, height: 13 }} /> Delete
         </button>
-
-        {/* Clear */}
         <button onClick={onClear} style={{
           display: "flex", alignItems: "center", gap: 5, padding: "7px 12px",
           background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)",
@@ -1696,27 +1696,64 @@ function ErrorState({ message, onRetry }: ErrorStateProps) {
   );
 }
 
+/* ─── EMPLOYER INFO BAR ─────────────────────────────────────── */
+function EmployerInfoBar({ employer }: { employer: EmployerInfo | null }) {
+  const empId      = employer?.employer_id  ?? localStorage.getItem("employer_id")      ?? "—";
+  const empName    = employer?.name         ?? localStorage.getItem("employer_name")    ?? "—";
+  const empCompany = employer?.company_name ?? localStorage.getItem("employer_company") ?? "—";
+
+  return (
+    <div style={{
+      background: "linear-gradient(90deg,#1E3A5F,#2563EB)",
+      padding: "7px 28px",
+      display: "flex", alignItems: "center", gap: 24,
+      borderBottom: "1px solid rgba(255,255,255,0.08)",
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+        <UserCheck style={{ width: 13, height: 13, color: "rgba(255,255,255,0.45)" }} />
+        <span style={{ fontSize: 10, color: "rgba(255,255,255,0.50)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em" }}>Employer</span>
+        <span style={{ fontSize: 12, color: "#fff", fontWeight: 700 }}>{empName}</span>
+      </div>
+      <div style={{ width: 1, height: 14, background: "rgba(255,255,255,0.18)", flexShrink: 0 }} />
+      <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+        <span style={{ fontSize: 10, color: "rgba(255,255,255,0.50)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em" }}>ID</span>
+        <span style={{ fontSize: 12, color: "#93C5FD", fontWeight: 800, letterSpacing: "0.04em" }}>{empId}</span>
+      </div>
+      <div style={{ width: 1, height: 14, background: "rgba(255,255,255,0.18)", flexShrink: 0 }} />
+      <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+        <Building2 style={{ width: 13, height: 13, color: "rgba(255,255,255,0.45)" }} />
+        <span style={{ fontSize: 10, color: "rgba(255,255,255,0.50)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em" }}>Company</span>
+        <span style={{ fontSize: 12, color: "#fff", fontWeight: 700 }}>{empCompany}</span>
+      </div>
+      <div style={{ marginLeft: "auto" }}>
+        <span style={{ fontSize: 9.5, color: "rgba(255,255,255,0.38)", fontStyle: "italic" }}>
+          🔒 Unlocked contacts are exclusive to your account
+        </span>
+      </div>
+    </div>
+  );
+}
+
 /* ─── MAIN COMPONENT ────────────────────────────────────────── */
 export default function ListPersons() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   /* ── API state ── */
-  const [data, setData] = useState<Student[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [data, setData]         = useState<Student[]>([]);
+  const [loading, setLoading]   = useState<boolean>(true);
+  const [error, setError]       = useState<string | null>(null);
+
+  /* ── Employer info from API ── */
+  const [employer, setEmployer] = useState<EmployerInfo | null>(null);
 
   /* ── UI state ── */
-  const [search, setSearch] = useState<string>("");
-  const [qual, setQual] = useState<string>("All");
-  const [sortK, setSortK] = useState<keyof Student | null>(null);
-  const [sortD, setSortD] = useState<"asc" | "desc">("asc");
-  const [page, setPage] = useState<number>(0);
+  const [search, setSearch]     = useState<string>("");
+  const [qual, setQual]         = useState<string>("All");
+  const [sortK, setSortK]       = useState<keyof Student | null>(null);
+  const [sortD, setSortD]       = useState<"asc" | "desc">("asc");
+  const [page, setPage]         = useState<number>(0);
   const [selected, setSelected] = useState<Set<number>>(new Set());
-
-  /* ── Unlocked IDs (paid for) ── */
-  const [unlockedIds, setUnlockedIds] = useState<Set<number>>(
-    () => new Set<number>(JSON.parse(localStorage.getItem("unlockedIds") ?? "[]"))
-  );
 
   /* ── Fetch from Django API ── */
   const fetchData = async (): Promise<void> => {
@@ -1729,13 +1766,28 @@ export default function ListPersons() {
         setLoading(false);
         return;
       }
+
       const res = await fetch(`${API_URL}?employer_id=${employerId}`, {
         headers: { "Content-Type": "application/json" },
       });
+
       if (!res.ok) throw new Error(`Server returned ${res.status}: ${res.statusText}`);
+
       const json = await res.json();
-      const raw: RawStudent[] = Array.isArray(json) ? json : (json.results ?? []);
+
+      const raw: RawStudent[] = Array.isArray(json)
+        ? json
+        : (json.students ?? json.results ?? []);
+
+      if (json.employer) {
+        setEmployer(json.employer);
+        localStorage.setItem("employer_id",      json.employer.employer_id ?? "");
+        localStorage.setItem("employer_name",    json.employer.name        ?? "");
+        localStorage.setItem("employer_company", json.employer.company_name ?? "");
+      }
+
       setData(raw.map((item, i) => normalise(item, i)));
+
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Failed to load data.");
     } finally {
@@ -1743,12 +1795,10 @@ export default function ListPersons() {
     }
   };
 
-  /* ── On mount: fetch data + refresh unlocked IDs from localStorage ── */
+  /* ── Re-fetch every time this page is navigated to ── */
   useEffect(() => {
     fetchData();
-    const stored: number[] = JSON.parse(localStorage.getItem("unlockedIds") ?? "[]");
-    setUnlockedIds(new Set(stored));
-  }, []);
+  }, [location.key]);
 
   /* ── Derived values ── */
   const MAX_EXP = data.length ? Math.max(...data.map(p => p.exp), 1) : 1;
@@ -1777,10 +1827,10 @@ export default function ListPersons() {
     return d;
   }, [data, search, qual, sortK, sortD]);
 
-  const totPg  = Math.max(1, Math.ceil(filtered.length / PAGE_SZ));
-  const sp     = Math.min(page, totPg - 1);
-  const rows   = filtered.slice(sp * PAGE_SZ, (sp + 1) * PAGE_SZ);
-  const pad    = [...rows, ...Array<null>(PAGE_SZ - rows.length).fill(null)];
+  const totPg = Math.max(1, Math.ceil(filtered.length / PAGE_SZ));
+  const sp    = Math.min(page, totPg - 1);
+  const rows  = filtered.slice(sp * PAGE_SZ, (sp + 1) * PAGE_SZ);
+  const pad   = [...rows, ...Array<null>(PAGE_SZ - rows.length).fill(null)];
 
   const pageIds    = rows.map(r => r.id);
   const allPageSel = pageIds.length > 0 && pageIds.every(id => selected.has(id));
@@ -1791,26 +1841,18 @@ export default function ListPersons() {
   const onQual   = (q: string): void => { setQual(q); setPage(0); };
 
   /* ── Checkbox logic ── */
-  const toggleRow = (id: number): void => setSelected(s => {
-    const n = new Set(s);
-    n.has(id) ? n.delete(id) : n.add(id);
-    return n;
-  });
-  const togglePage = (): void => setSelected(s => {
-    const n = new Set(s);
-    allPageSel ? pageIds.forEach(id => n.delete(id)) : pageIds.forEach(id => n.add(id));
-    return n;
-  });
-  const clearSel = (): void => setSelected(new Set());
+  const toggleRow  = (id: number): void => setSelected(s => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const togglePage = (): void => setSelected(s => { const n = new Set(s); allPageSel ? pageIds.forEach(id => n.delete(id)) : pageIds.forEach(id => n.add(id)); return n; });
+  const clearSel   = (): void => setSelected(new Set());
 
   /* ── Export CSV ── */
   const exportCSV = (exportRows: Student[]): void => {
-    const hdr = ["S.No", "Name", "Qualification", "Experience (yrs)", "Field", "Phone", "Email"];
+    const hdr   = ["S.No", "Name", "Qualification", "Experience (yrs)", "Field", "Phone", "Email"];
     const lines = [hdr, ...exportRows.map((p, i) => [i + 1, p.name, p.qual, p.exp, p.field, p.phone, p.email])];
-    const csv = lines.map(r => r.join(",")).join("\n");
-    const a = document.createElement("a");
-    a.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
-    a.download = "hr_persons.csv";
+    const csv   = lines.map(r => r.join(",")).join("\n");
+    const a     = document.createElement("a");
+    a.href      = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+    a.download  = "hr_persons.csv";
     a.click();
   };
   const exportAll      = (): void => exportCSV(filtered);
@@ -1858,7 +1900,7 @@ export default function ListPersons() {
     <div style={{ minHeight: "100vh", fontFamily: "'Inter',system-ui,sans-serif", background: "linear-gradient(160deg,#EFF6FF 0%,#DBEAFE 35%,#EFF6FF 65%,#F0F9FF 100%)", position: "relative" }}>
       <style>{pulseStyle}</style>
 
-      {/* blobs */}
+      {/* ── BACKGROUND BLOBS ── */}
       <div style={{ position: "fixed", inset: 0, overflow: "hidden", pointerEvents: "none", zIndex: 0 }}>
         <div style={{ position: "absolute", width: 700, height: 500, borderRadius: "50%", top: -200, left: -200, background: "radial-gradient(ellipse,rgba(147,197,253,0.35) 0%,transparent 70%)" }} />
         <div style={{ position: "absolute", width: 500, height: 500, borderRadius: "50%", bottom: -150, right: -100, background: "radial-gradient(ellipse,rgba(186,230,253,0.40) 0%,transparent 70%)" }} />
@@ -1870,6 +1912,8 @@ export default function ListPersons() {
         {/* ── HEADER ── */}
         <header style={{ background: "rgba(255,255,255,0.82)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderBottom: "1px solid #BFDBFE", boxShadow: "0 2px 20px rgba(37,99,235,0.09)", position: "sticky", top: 0, zIndex: 100 }}>
           <div style={{ maxWidth: 1400, margin: "0 auto", padding: "13px 28px", display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+
+            {/* Logo */}
             <div style={{ display: "flex", alignItems: "center", gap: 13, flexShrink: 0 }}>
               <div style={{ width: 46, height: 46, borderRadius: 15, position: "relative", overflow: "hidden", background: "linear-gradient(135deg,#2563EB,#1D4ED8)", boxShadow: "0 0 0 1px rgba(37,99,235,0.3),0 6px 18px rgba(37,99,235,0.35),inset 0 1px 0 rgba(255,255,255,0.25)" }}>
                 <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg,rgba(255,255,255,0.22) 0%,transparent 60%)" }} />
@@ -1885,6 +1929,7 @@ export default function ListPersons() {
 
             <div style={{ width: 1, height: 34, background: "#BFDBFE", flexShrink: 0 }} />
 
+            {/* Breadcrumb */}
             <div style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 12, color: "#64748B" }}>
               <Home style={{ width: 13, height: 13, color: "#3B82F6" }} />
               <a href="#" style={{ color: "#3B82F6", fontWeight: 600, textDecoration: "none" }}>Home</a>
@@ -1894,6 +1939,7 @@ export default function ListPersons() {
               <span style={{ color: "#1E3A5F", fontWeight: 600 }}>List of Persons</span>
             </div>
 
+            {/* Right side */}
             <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
               <button onClick={() => navigate("/postjob")} style={{
                 background: "linear-gradient(135deg,#2563EB,#1D4ED8)", color: "#fff",
@@ -1902,7 +1948,6 @@ export default function ListPersons() {
               }}>
                 + Post Job
               </button>
-
               <div style={{ display: "flex", alignItems: "center", gap: 7, background: "rgba(220,252,231,0.7)", border: "1px solid #86EFAC", padding: "4px 10px 4px 7px", borderRadius: 99, boxShadow: "0 1px 6px rgba(34,197,94,0.12)" }}>
                 <div style={{ position: "relative", width: 10, height: 10, flexShrink: 0 }}>
                   <div style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "#22C55E", animation: "livePulse 1.6s ease-out infinite" }} />
@@ -1914,6 +1959,9 @@ export default function ListPersons() {
             </div>
           </div>
         </header>
+
+        {/* ── EMPLOYER INFO BAR ── */}
+        <EmployerInfoBar employer={employer} />
 
         {/* ── NAVBAR ── */}
         <nav style={{ background: "rgba(255,255,255,0.75)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", borderBottom: "1px solid #DBEAFE" }}>
@@ -1945,7 +1993,7 @@ export default function ListPersons() {
             <StatCard icon={Users}       iconBg="#DBEAFE" iconCol="#2563EB" val={loading ? "…" : data.length} label="Total Persons"  />
             <StatCard icon={Briefcase}   iconBg="#D1FAE5" iconCol="#059669" val={loading ? "…" : avgExp + "y"} label="Avg Experience" />
             <StatCard icon={Lightbulb}   iconBg="#EDE9FE" iconCol="#7C3AED" val={loading ? "…" : fields}      label="Fields Covered" />
-            <StatCard icon={Award}       iconBg="#FEF3C7" iconCol="#D97706" val={loading ? "…" : quals}        label="Qualifications" />
+            <StatCard icon={Award}       iconBg="#FEF3C7" iconCol="#D97706" val={loading ? "…" : quals}       label="Qualifications" />
             {selected.size > 0 && (
               <StatCard icon={CheckSquare} iconBg="#DCFCE7" iconCol="#16A34A" val={selected.size} label="Selected" />
             )}
@@ -1984,7 +2032,10 @@ export default function ListPersons() {
             {/* search */}
             <div style={{ position: "relative", flex: 1, minWidth: 220, maxWidth: 360, marginLeft: "auto" }}>
               <Search style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", width: 13, height: 13, color: "#93C5FD" }} />
-              <input type="text" placeholder="Search name, field, qualification…" value={search}
+              <input
+                type="text"
+                placeholder="Search name, field, qualification…"
+                value={search}
                 onChange={e => onSearch(e.target.value)}
                 style={{ width: "100%", paddingLeft: 32, paddingRight: search ? 32 : 14, paddingTop: 9, paddingBottom: 9, fontSize: 12.5, background: "rgba(255,255,255,0.90)", border: "1.5px solid #BFDBFE", borderRadius: 11, outline: "none", color: "#1E3A5F", boxSizing: "border-box", transition: "all 0.2s" }}
                 onFocus={e => { e.target.style.borderColor = "#3B82F6"; e.target.style.boxShadow = "0 0 0 3px rgba(59,130,246,0.15)"; }}
@@ -2039,7 +2090,7 @@ export default function ListPersons() {
                       <p style={{ fontSize: 13, color: "#94A3B8" }}>No persons found matching your search.</p>
                     </td></tr>
                   ) : pad.map((row, i) => {
-                    const even = i % 2 === 0;
+                    const even   = i % 2 === 0;
                     if (!row) return (
                       <tr key={`pad${i}`} style={{ height: 56, background: even ? "#fff" : "#F8FBFF", borderBottom: "1px solid #F0F7FF" }}>
                         <td colSpan={9} />
@@ -2051,7 +2102,7 @@ export default function ListPersons() {
                     const FieldI = FIELD_ICONS[row.field] ?? Lightbulb;
                     const pct    = Math.round((row.exp / MAX_EXP) * 100);
                     const isSel  = selected.has(row.id);
-                    const isUnlocked = unlockedIds.has(row.id);
+                    const isUnlocked = row.isUnlocked; // ← comes from API, no localStorage
 
                     return (
                       <tr key={row.id} style={{
@@ -2105,7 +2156,7 @@ export default function ListPersons() {
                           </span>
                         </td>
 
-                        {/* CV — locked unless paid */}
+                        {/* CV */}
                         <td style={{ padding: "0 14px", verticalAlign: "middle" }}>
                           {isUnlocked ? (
                             <button style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "5px 12px", borderRadius: 9, fontSize: 11.5, fontWeight: 700, color: "#2563EB", background: "#EFF6FF", border: "1.5px solid #BFDBFE", cursor: "pointer", transition: "all 0.15s", whiteSpace: "nowrap" }}
@@ -2120,7 +2171,7 @@ export default function ListPersons() {
                           )}
                         </td>
 
-                        {/* Phone — locked unless paid */}
+                        {/* Phone */}
                         <td style={{ padding: "0 14px", verticalAlign: "middle" }}>
                           {isUnlocked ? (
                             <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "#64748B" }}>
@@ -2132,7 +2183,7 @@ export default function ListPersons() {
                           )}
                         </td>
 
-                        {/* Email — locked unless paid */}
+                        {/* Email */}
                         <td style={{ padding: "0 14px", verticalAlign: "middle" }}>
                           {isUnlocked ? (
                             <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "#64748B" }}>

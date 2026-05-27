@@ -37,32 +37,76 @@ export default function PayForData() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  // const handleSubmit = async (): Promise<void> => {
+  //   const trimmed = refId.trim();
+  //   if (!trimmed) { setError("Please enter a valid payment reference ID."); return; }
+  //   setPhase("submitting");
+  //   setError("");
+  //   try {
+  //     // Optional: POST to backend
+  //     // await fetch("http://192.168.0.10:8000/api/hr/payment-confirm/", {
+  //     //   method: "POST",
+  //     //   headers: { "Content-Type": "application/json" },
+  //     //   body: JSON.stringify({ reference_id: trimmed, ids: selectedIds }),
+  //     // });
+
+  //     await new Promise<void>(r => setTimeout(r, 1400));
+
+  //     const existing: number[] = JSON.parse(localStorage.getItem("unlockedIds") ?? "[]");
+  //     const merged = Array.from(new Set([...existing, ...selectedIds]));
+  //     localStorage.setItem("unlockedIds", JSON.stringify(merged));
+
+  //     setPhase("success");
+  //     setTimeout(() => navigate("/listpersons"), 2000);
+  //   } catch (err: unknown) {
+  //     setError(err instanceof Error ? err.message : "Submission failed.");
+  //     setPhase("ack");
+  //   }
+  // };
+
+
   const handleSubmit = async (): Promise<void> => {
-    const trimmed = refId.trim();
-    if (!trimmed) { setError("Please enter a valid payment reference ID."); return; }
-    setPhase("submitting");
-    setError("");
-    try {
-      // Optional: POST to backend
-      // await fetch("http://192.168.0.10:8000/api/hr/payment-confirm/", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ reference_id: trimmed, ids: selectedIds }),
-      // });
+  const trimmed = refId.trim();
+  if (!trimmed) { setError("Please enter a valid payment reference ID."); return; }
 
-      await new Promise<void>(r => setTimeout(r, 1400));
+  setPhase("submitting");
+  setError("");
 
-      const existing: number[] = JSON.parse(localStorage.getItem("unlockedIds") ?? "[]");
-      const merged = Array.from(new Set([...existing, ...selectedIds]));
-      localStorage.setItem("unlockedIds", JSON.stringify(merged));
-
-      setPhase("success");
-      setTimeout(() => navigate("/listpersons"), 2000);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Submission failed.");
+  try {
+    const employerId = localStorage.getItem("employer_id");
+    if (!employerId) {
+      setError("No employer session found. Please log in again.");
       setPhase("ack");
+      return;
     }
-  };
+
+    // ── POST payment to backend — creates Payment records in DB ──
+    const res = await fetch("http://192.168.0.7:8000/api/hr/payment-confirm/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        employer_id:  employerId,
+        reference_id: trimmed,
+        student_ids:  selectedIds,
+      }),
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.error ?? `Server error ${res.status}`);
+    }
+
+    // ── Payment saved in DB successfully ──
+    setPhase("success");
+
+    // ── Navigate back after 2s; location.key change triggers re-fetch ──
+    setTimeout(() => navigate("/listpersons", { replace: false }), 2000);
+
+  } catch (err: unknown) {
+    setError(err instanceof Error ? err.message : "Submission failed. Please try again.");
+    setPhase("ack");
+  }
+};
 
   if (phase === "success") {
     return (
