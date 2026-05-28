@@ -950,6 +950,10 @@ const G = `
   @media (max-width: 600px) {
     .header-logo-text p:first-child { font-size:8.5px !important; }
     .header-logo-text p:last-child  { font-size:13px !important; }
+  @keyframes fadeIn {
+    from { opacity:0; transform:translateX(-50%) translateY(6px); }
+    to   { opacity:1; transform:translateX(-50%) translateY(0); }
+}
   }
 `;
 
@@ -974,11 +978,11 @@ function TripleChevron() {
 }
 
 /* ══════ ENVELOPE ══════════════════════════════════════════ */
-function Envelope({ label, body, border, lid, line, stamp }: {
-  label:string; body:string; border:string; lid:string; line:string; stamp:string;
+function Envelope({ label, body, border, lid, line, stamp, onClick }: {
+  label:string; body:string; border:string; lid:string; line:string; stamp:string; onClick?:()=>void;
 }) {
   return (
-    <div className="env-wrap" tabIndex={0} aria-label={`${label} data folder`}>
+    <div className="env-wrap" tabIndex={0} aria-label={`${label} data folder`} onClick={onClick}>
       <svg className="env-svg" width="58" height="60" viewBox="0 0 70 72" fill="none">
         <g className="env-paper">
           <rect x="16" y="10" width="38" height="44" rx="3" fill="white" stroke={border} strokeWidth=".8"/>
@@ -1083,7 +1087,7 @@ function LoginCard() {
   return (
     <div style={{borderRadius:20,overflow:"hidden",background:"#FFFFFF",border:"1px solid #DDD6FE",boxShadow:cardShadow}}>
       {/* Header */}
-      <div style={{background:"linear-gradient(135deg,#4C1D95 0%,#7C3AED 55%,#A855F7 100%)",padding:"22px 20px 18px",position:"relative",overflow:"hidden"}}>
+      {/* <div style={{background:"linear-gradient(135deg,#4C1D95 0%,#7C3AED 55%,#A855F7 100%)",padding:"22px 20px 18px",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(135deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0.04) 60%,transparent 100%)",pointerEvents:"none"}}/>
         <div style={{position:"absolute",right:-22,top:-22,width:90,height:90,borderRadius:"50%",background:"rgba(255,255,255,0.08)",pointerEvents:"none"}}/>
         <div style={{position:"absolute",left:-10,bottom:-20,width:60,height:60,borderRadius:"50%",background:"rgba(196,181,253,0.15)",pointerEvents:"none"}}/>
@@ -1092,7 +1096,24 @@ function LoginCard() {
         </div>
         <p style={{margin:0,fontSize:15,fontWeight:700,color:"#fff",letterSpacing:"-0.3px",position:"relative"}}>Login for HR &amp; Employer</p>
         <p style={{margin:"3px 0 0",fontSize:11,color:"rgba(255,255,255,0.70)",position:"relative"}}>Sign in to access your dashboard</p>
-      </div>
+      </div> */}
+
+      <div style={{background:"linear-gradient(135deg,#4C1D95 0%,#7C3AED 55%,#A855F7 100%)",padding:"22px 20px 18px",position:"relative",overflow:"hidden"}}>
+  <div style={{position:"absolute",inset:0,background:"linear-gradient(135deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0.04) 60%,transparent 100%)",pointerEvents:"none"}}/>
+  <div style={{position:"absolute",right:-22,top:-22,width:90,height:90,borderRadius:"50%",background:"rgba(255,255,255,0.08)",pointerEvents:"none"}}/>
+  <div style={{position:"absolute",left:-10,bottom:-20,width:60,height:60,borderRadius:"50%",background:"rgba(196,181,253,0.15)",pointerEvents:"none"}}/>
+
+  {/* ← flex row: text left, icon right */}
+  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",position:"relative"}}>
+    <div>
+      <p style={{margin:0,fontSize:15,fontWeight:700,color:"#fff",letterSpacing:"-0.3px"}}>Login for HR &amp; Employer</p>
+      <p style={{margin:"3px 0 0",fontSize:11,color:"rgba(255,255,255,0.70)"}}>Sign in to access your dashboard</p>
+    </div>
+    <div style={{width:40,height:40,borderRadius:13,background:"rgba(255,255,255,0.20)",border:"1px solid rgba(255,255,255,0.40)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 3px 10px rgba(0,0,0,0.15),inset 0 1px 0 rgba(255,255,255,0.35)"}}>
+      <LogIn style={{width:17,height:17,color:"#fff"}}/>
+    </div>
+  </div>
+</div>
 
       {/* Body */}
       <div style={{padding:"20px 18px",display:"flex",flexDirection:"column",gap:11}}>
@@ -1352,6 +1373,14 @@ function JobGrid() {
 
 /* ══════ ROOT ══════════════════════════════════════════════ */
 export default function Index() {
+  const [toastVisible, setToastVisible] = useState(false);   // ← add this
+  const toastTimer = useRef<ReturnType<typeof setTimeout>>(); // ← add this
+  
+  function showToast() {                                      // ← add this
+    setToastVisible(true);
+    clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToastVisible(false), 3000);
+  }
   return (
     <div style={{minHeight:"100vh",fontFamily:"'Outfit',system-ui,sans-serif",background:"linear-gradient(160deg,#F5F3FF 0%,#EDE9FE 35%,#F5F3FF 65%,#FAF5FF 100%)",position:"relative"}}>
       <style>{G}</style>
@@ -1431,18 +1460,33 @@ export default function Index() {
 
         {/* ── FOOTER ── */}
         <footer style={{maxWidth:1400,margin:"0 auto",padding:"0 28px 36px"}}>
-          <div className="footer-inner" style={{borderRadius:22,padding:"22px 28px",display:"flex",flexWrap:"wrap",alignItems:"center",justifyContent:"space-between",gap:20,background:"rgba(255,255,255,0.80)",backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)",border:"1px solid #DDD6FE",boxShadow:"0 4px 24px rgba(124,58,237,0.09),inset 0 1px 0 rgba(255,255,255,0.9)"}}>
+          <div className="footer-inner" style={{position:"relative",borderRadius:22,padding:"22px 28px",display:"flex",flexWrap:"wrap",alignItems:"center",justifyContent:"space-between",gap:20,background:"rgba(255,255,255,0.80)",backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)",border:"1px solid #DDD6FE",boxShadow:"0 4px 24px rgba(124,58,237,0.09),inset 0 1px 0 rgba(255,255,255,0.9)"}}>
             <div style={{flex:1,minWidth:0}}>
               <p style={{margin:"0 0 16px",fontSize:10,fontWeight:800,color:"#C4B5FD",letterSpacing:"0.1em",textTransform:"uppercase",display:"flex",alignItems:"center",gap:6}}>
                 <GraduationCap style={{width:12,height:12,color:"#7C3AED"}}/>
                 Qualification-wise Data Folders
               </p>
               <div className="env-row">
-                {QUALS.map((q,i) => <Envelope key={i} {...q}/>)}
+                {QUALS.map((q,i) => <Envelope key={i} {...q} onClick={showToast}/>)}
+                {/* {QUALS.map((q,i) => <Envelope key={i} {...q}/>)} */}
                 <TripleChevron/>
               </div>
             </div>
             <div className="footer-divider" style={{width:1,height:64,background:"#DDD6FE",flexShrink:0}}/>
+          {toastVisible && (
+    <div style={{
+      position:"absolute", bottom:16, left:"50%", transform:"translateX(-50%)",
+      background:"rgba(255,255,255,0.97)", border:"1px solid #DDD6FE",
+      borderRadius:12, padding:"9px 18px",
+      fontSize:12.5, fontWeight:600, color:"#5B21B6",
+      display:"flex", alignItems:"center", gap:8,
+      boxShadow:"0 4px 16px rgba(124,58,237,0.15)",
+      whiteSpace:"nowrap", pointerEvents:"none",
+      animation:"fadeIn .2s ease"
+    }}>
+      🔒 Please sign in to view the students data
+    </div>
+  )}
           </div>
         </footer>
 
