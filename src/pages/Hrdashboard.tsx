@@ -578,92 +578,36 @@ export default function HRDashboard() {
   // TABLE DATA
   // =========================================
   const [students, setStudents] = useState<any[]>([]);
-
-  // =========================================
-  // CHECK LOGIN + FETCH DATA
-  // =========================================
-//   useEffect(() => {
-
-//     const userType = localStorage.getItem("user_type");
-
-//     const hrId = localStorage.getItem("hr_id");
-
-//     if (userType !== "hr" || !hrId) {
-
-//       navigate("/");
-
-//       return;
-//     }
-
-//     setHrData({
-//       hr_id: hrId,
-//       name: localStorage.getItem("name") || "HR User",
-//       email: localStorage.getItem("email") || "",
-
-//     });
-
-//     // =========================================
-//     // FETCH STUDENTS FROM DATABASE
-//     // =========================================
-//     fetch(
-//   `http://192.168.29.136:8000/api/auth/students/?hr_id=${hrData?.hr_id}`
-// )
-//   .then((res) => res.json())
-//   .then((data) => {
-
-//     console.log(data);
-
-//     if (data.results) {
-//       setStudents(data.results);
-//     } else {
-//       setStudents(data);
-//     }
-
-//     setLoading(false);
-//   });
-//   }, [navigate]);
-
-
-
 useEffect(() => {
-
   const userType = localStorage.getItem("user_type");
-  const hrId = localStorage.getItem("hr_id");
+  const hrId     = localStorage.getItem("hr_id");
 
   if (userType !== "hr" || !hrId) {
     navigate("/");
     return;
   }
 
-  const name = localStorage.getItem("name") || "HR User";
-  const email = localStorage.getItem("email") || "";
+  const name  = localStorage.getItem("hr_name")  || "HR User";
+  const email = localStorage.getItem("hr_email") || "";
 
-  setHrData({
-    hr_id: hrId,
-    name,
-    email,
-  });
+  setHrData({ hr_id: hrId, name, email });
 
-  console.log("Logged HR ID:", hrId);
-
-  fetch(
-    `http://192.168.0.7:8000/api/auth/students/?hr_id=${hrId}`
-  )
-    .then((res) => res.json())
+  fetch(`http://192.168.0.6:8000/api/students/?hr_id=${hrId}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((res) => {
+      console.log("Status:", res.status);
+      return res.json();
+    })
     .then((data) => {
-
-      console.log("Students:", data);
-
-      if (data.results) {
-        setStudents(data.results);
-      } else {
-        setStudents(data);
-      }
-
+      console.log("Raw data:", data);
+      setStudents(Array.isArray(data) ? data : data.results ?? []);
       setLoading(false);
     })
     .catch((err) => {
-      console.log(err);
+      console.error("Failed to fetch students:", err);
       setLoading(false);
     });
 

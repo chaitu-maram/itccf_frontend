@@ -377,7 +377,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 /* ═══════════════════════════════════════════════════════════
    Constants
 ═══════════════════════════════════════════════════════════ */
-const BASE = "http://192.168.0.7:8000/api";
+const BASE = "http://192.168.0.6:8000/api";
 
 /* ═══════════════════════════════════════════════════════════
    OTP Input — 6 individual boxes with auto-advance & paste

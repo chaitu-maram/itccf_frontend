@@ -81,7 +81,7 @@ export default function PayForData() {
     }
 
     // ── POST payment to backend — creates Payment records in DB ──
-    const res = await fetch("http://192.168.0.7:8000/api/hr/payment-confirm/", {
+    const res = await fetch("http://192.168.0.6:8000/api/hr/payment-confirm/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

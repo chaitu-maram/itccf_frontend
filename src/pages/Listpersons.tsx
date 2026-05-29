@@ -2309,8 +2309,8 @@ import {
 } from "lucide-react";
 
 /* ─── API CONFIG ────────────────────────────────────────────── */
-const API_URL         = "http://192.168.0.7:8000/api/students/filter/";
-const API_URL_ALL     = "http://192.168.0.7:8000/api/students/";   // ← new endpoint for all employees
+const API_URL         = "http://192.168.0.6:8000/api/students/filter/";
+const API_URL_ALL     = "http://192.168.0.6:8000/api/students/";   // ← new endpoint for all employees
 
 /* ─── TYPES ─────────────────────────────────────────────────── */
 interface RawStudent {
@@ -3304,7 +3304,7 @@ export default function ListPersons() {
                             <button
                               onClick={() => {
                                 const employerId = localStorage.getItem("employer_id") ?? "";
-                                const url = `http://192.168.0.7:8000/api/students/${row.id}/cv/?employer_id=${employerId}`;
+                                const url = `http://192.168.0.6:8000/api/students/${row.id}/cv/?employer_id=${employerId}`;
                                 window.open(url, "_blank");
                               }}
                               style={{

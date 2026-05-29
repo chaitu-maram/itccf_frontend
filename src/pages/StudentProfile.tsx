@@ -2318,7 +2318,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const BASE = "http://192.168.0.7:8000/api";
+const BASE = "http://192.168.0.6:8000/api";
 
 const ACADEMIC_API: Record<string, string> = {
   "SSC":             `${BASE}/vocational/`,
@@ -3201,6 +3201,9 @@ const buildFormData = (form: F, hrPhoto: File | null, studentPhoto: File | null,
   const fd = new FormData();
   const a  = (key: string, val: string | null | undefined) => { if (val) fd.append(key, val); };
   const ab = (key: string, val: boolean) => fd.append(key, String(val));
+
+  const hrId = localStorage.getItem("hr_id");
+  if (hrId) fd.append("hr_id", hrId);
 
   a("hr_name", form.hrName);          a("id_no", form.idNo);
   a("password", form.password);
