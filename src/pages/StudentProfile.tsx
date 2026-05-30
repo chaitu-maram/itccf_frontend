@@ -2318,7 +2318,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const BASE = "http://192.168.0.6:8000/api";
+const BASE = "http://192.168.0.7:8000/api";
 
 const ACADEMIC_API: Record<string, string> = {
   "SSC":             `${BASE}/vocational/`,
