@@ -797,7 +797,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 
-const BASE = 'http://192.168.0.7:8000/api';
+const BASE = 'http://192.168.1.28:8000/api';
 
 const ORGS = [
   'Hospitals', 'Schools', 'Colleges', 'IT Industry',
