@@ -1210,7 +1210,7 @@ import { Link, useNavigate } from "react-router-dom";
 /* ═══════════════════════════════════════════════════════════
    Constants
 ═══════════════════════════════════════════════════════════ */
-const BASE = "http://192.168.0.4:8000/api";
+const BASE = "http://192.168.0.2:8000/api";
 
 // States where college name is fetched as a dropdown
 const DROPDOWN_STATES = ["Andhra Pradesh", "Telangana"];

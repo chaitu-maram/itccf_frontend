@@ -1167,7 +1167,7 @@ useEffect(() => {
 
   setHrData({ hr_id: hrId, name, email });
 
-  fetch(`http://192.168.0.4:8000/api/students/?hr_id=${hrId}`, {
+  fetch(`http://192.168.0.2:8000/api/students/?hr_id=${hrId}`, {
     headers: {
       "Content-Type": "application/json",
     },

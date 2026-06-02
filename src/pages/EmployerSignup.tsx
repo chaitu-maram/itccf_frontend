@@ -760,7 +760,7 @@ import { Link, useNavigate } from "react-router-dom";
 /* ═══════════════════════════════════════════════════════════
    Constants
 ═══════════════════════════════════════════════════════════ */
-const BASE = "http://192.168.0.4:8000/api";
+const BASE = "http://192.168.0.2:8000/api";
 
 const DESIGNATIONS = [
   "CEO / Managing Director",

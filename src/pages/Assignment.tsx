@@ -2698,7 +2698,7 @@ import {
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
-const BASE = "http://192.168.0.4:8000/api";
+const BASE = "http://192.168.0.2:8000/api";
 
 interface RawMCQ {
   id?: number;

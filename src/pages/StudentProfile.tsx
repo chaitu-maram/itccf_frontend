@@ -3555,7 +3555,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const BASE = "http://192.168.0.4:8000/api";
+const BASE = "http://192.168.0.2:8000/api";
 
 const ACADEMIC_API: Record<string, string> = {
   "SSC":             `${BASE}/vocational/`,
@@ -4623,7 +4623,7 @@ const StudentProfile = () => {
             {/* DOB + Regn + Date */}
             <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <DOBPicker dob_d={v("dob_d")} dob_m={v("dob_m")} dob_y={v("dob_y")} onChange={set} />
-              <Field label="Regn. No." field="regnNo" value={v("regnNo")} onChange={set} />
+              {/* <Field label="Regn. No." field="regnNo" value={v("regnNo")} onChange={set} /> */}
               <Field label="Date"      field="date"   value={v("date")}   onChange={set} />
             </div>
 
