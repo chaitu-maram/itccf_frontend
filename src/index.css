@@ -44,8 +44,14 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
-  * {
+  *, *::before, *::after {
+    box-sizing: border-box;
     @apply border-border;
+  }
+
+  html {
+    overflow-x: hidden;
+    max-width: 100%;
   }
 
   body {
@@ -53,8 +59,10 @@
     font-family: Arial, Helvetica, sans-serif;
     font-size: 14px;
     overflow-x: hidden;
+    max-width: 100%;
   }
 }
+
 /* ===================  header  =================== */
 
 .main-header-tabs {
@@ -98,12 +106,21 @@
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid rgb(237, 233, 254);
   position: relative;
+  width: 100%;
+  max-width: 100%;
+  /* overflow visible so desktop nav links show */
+  overflow: visible;
 }
 
+/* Desktop: nav-header-inner is a normal flex row */
 .nav-header-inner {
-  width: 1400px;
-  margin: 0px auto;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
   padding: 5px 28px;
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: nowrap;
 }
 
 .nav-header a {
@@ -135,102 +152,151 @@
     cursor: pointer;
     padding: 10px 20px;
     color: rgb(124, 58, 237);
-    z-index: 100000;
+    z-index: 100;
     position: relative;
+    width: 100%;
+    text-align: left;
   }
 
+  /*
+   * KEY FIX: on mobile the nav is IN-FLOW (position: relative), not
+   * position:absolute. This means when it opens it physically pushes
+   * the page content downward instead of floating over it.
+   */
   .nav-header {
-    display: flex;
-    align-items: center;
-    min-height: 50px;
+    overflow: hidden; /* clips the collapsing nav during animation */
   }
 
   .nav-header-inner {
-    position: fixed;
-    top: 0;
-    left: -280px;
-    width: 280px;
-    height: 600px;          /* ← full screen height, not 600px */
-    margin: 0;
-    padding: 80px 20px 40px;
-    background: white;
+    /* In-flow — no position:absolute, no top/left/right */
+    position: relative;
+    width: 100%;
+    background: #fff;
     display: flex;
     flex-direction: column;
-    transition: left 0.3s ease;
-    z-index: 99999;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-    overflow-y: auto;       /* ← scroll if links overflow */
+    border-top: 1px solid #ede9fe;
+
+    /* Collapsed state: zero height, clipped */
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    padding: 0;
   }
 
   .nav-header-inner.open {
-    left: 0;
+    max-height: 600px;
+    padding: 0; /* links have their own padding */
+  }
+
+  .nav-header-inner a {
+    padding: 18px 24px;
+    border-bottom: 1px solid #eee;
   }
 }
 
 /* ======================== mobile (≤480px) =================== */
 
 @media (max-width: 480px) {
-
-  /* Header: tighten padding */
   header > div {
-    padding: 10px 14px !important;
+    padding: 10px 12px !important;
     gap: 10px !important;
   }
 
-  /* Hide the vertical divider — too cramped */
   header > div > div:nth-child(2) {
     display: none;
   }
 
-  /* Logo icon slightly smaller */
   header .main-header-logo {
     font-size: 15px;
   }
 
-  /* Tabs row: allow wrapping, tighten gap */
   header > div > div:last-child {
     gap: 6px !important;
   }
 
-  /* Tabs: smaller text & padding on very small screens */
   .main-header-tabs {
     padding: 4px 10px;
     font-size: 10.5px;
   }
 }
 
+/* ======================== footer =================== */
+
 .footer-inner {
-  overflow-x: scroll;
+  /* No overflow:hidden here — that was clipping the env-row scroll.
+     The toast uses position:absolute inside footer-inner which still works. */
+  overflow: visible;
 }
 
-/* ----------------- table ------------- */
+/*
+ * env-row is ALWAYS a single scrollable horizontal strip.
+ * flex-wrap:nowrap ensures all 7+ envelopes stay on one line.
+ * overflow-x:auto lets the user scroll to see them all.
+ * The parent (.footer-inner > div) must not have overflow:hidden.
+ */
+.env-row {
+  display: flex;
+  gap: 14px;
+  align-items: flex-end;
+  flex-wrap: nowrap;            /* never wrap — always one row */
+  overflow-x: auto;             /* scroll to reveal hidden items */
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  padding-bottom: 8px;          /* room for scrollbar on desktop */
+  /* Don't constrain width — let content determine it */
+  min-width: 0;
+}
+
+/* Hide scrollbar visually but keep it functional */
+.env-row::-webkit-scrollbar {
+  height: 4px;
+}
+.env-row::-webkit-scrollbar-track {
+  background: transparent;
+}
+.env-row::-webkit-scrollbar-thumb {
+  background: #C4B5FD;
+  border-radius: 99px;
+}
+
+@media (max-width: 900px) {
+  .env-row::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ─────── table ─────── */
+
+.tbl-viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  width: 100%;
+  max-width: 100%;
+}
 
 @media (max-width: 600px) {
   .tbl-viewport {
     overflow-x: auto;
     overflow-y: auto;
   }
-
-  .tbl-viewport > div {
-    overflow-x: hidden;
-    text-align: left;
-  }
 }
-
 
 /* =========================  post job  ======================== */
 
-.postjob-submit{
-  display: 'flex'; gap: 14;
+.postjob-submit {
+  display: flex;
+  gap: 14px;
 }
 
 @media (max-width: 600px) {
-  .postjob-submit{
+  .postjob-submit {
     flex-direction: column;
   }
 
-  .postjob-submit button{
+  .postjob-submit button {
     margin-bottom: 5px;
   }
-
 }
