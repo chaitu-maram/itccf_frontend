@@ -448,7 +448,7 @@ const Assignment = () => {
           <div style={{ display: "flex", gap: 8, justifyContent: "center", marginBottom: 24, flexWrap: "wrap" }}>
             {SECTIONS.map(sec => (
               <div key={sec.key} style={{ background: sec.light, border: `1px solid ${sec.accent}22`, borderRadius: 12, padding: "10px 14px", textAlign: "center", minWidth: 80 }}>
-                <div style={{ fontSize: 22, fontWeight: 900, color: sec.accent }}>{bySection[sec.key] ?? 0}/2</div>
+                <div style={{ fontSize: 22, fontWeight: 900, color: sec.accent }}>{bySection[sec.key] ?? 0}/4</div>
                 <div style={{ fontSize: 10, fontWeight: 700, color: sec.color, marginTop: 2 }}>{sec.key}</div>
               </div>
             ))}

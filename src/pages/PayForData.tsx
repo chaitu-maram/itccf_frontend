@@ -37,34 +37,6 @@ export default function PayForData() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // const handleSubmit = async (): Promise<void> => {
-  //   const trimmed = refId.trim();
-  //   if (!trimmed) { setError("Please enter a valid payment reference ID."); return; }
-  //   setPhase("submitting");
-  //   setError("");
-  //   try {
-  //     // Optional: POST to backend
-  //     // await fetch("http://192.168.0.10:8000/api/hr/payment-confirm/", {
-  //     //   method: "POST",
-  //     //   headers: { "Content-Type": "application/json" },
-  //     //   body: JSON.stringify({ reference_id: trimmed, ids: selectedIds }),
-  //     // });
-
-  //     await new Promise<void>(r => setTimeout(r, 1400));
-
-  //     const existing: number[] = JSON.parse(localStorage.getItem("unlockedIds") ?? "[]");
-  //     const merged = Array.from(new Set([...existing, ...selectedIds]));
-  //     localStorage.setItem("unlockedIds", JSON.stringify(merged));
-
-  //     setPhase("success");
-  //     setTimeout(() => navigate("/listpersons"), 2000);
-  //   } catch (err: unknown) {
-  //     setError(err instanceof Error ? err.message : "Submission failed.");
-  //     setPhase("ack");
-  //   }
-  // };
-
-
   const handleSubmit = async (): Promise<void> => {
   const trimmed = refId.trim();
   if (!trimmed) { setError("Please enter a valid payment reference ID."); return; }
